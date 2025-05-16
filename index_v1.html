@@ -20,10 +20,10 @@
             .then(res => res.json())
             .then(data => {
                 const address = data.display_name || "WHERE ARE YOU?";
-                document.getElementById("info").textContent += `\n${address}`;
+                document.getElementById("info").textContent += `\n\n${address}`;
             })
             .catch(err => {
-                document.getElementById("info").textContent += `\nError: ${err.message}`;
+                document.getElementById("info").textContent += `\n\nError: ${err.message}`;
             })
         }
         if(navigator.geolocation){
