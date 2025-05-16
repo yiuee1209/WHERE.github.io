@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I know where you are .</title>
+    <style>
+        body {font-family: monospace; padding: 20px;}
+        #info {font-size: 18px;color: rgb(202, 51, 51);}
+    </style>
+</head>
+<body>
+    <h2>Don't look back.</h2>
+    <div id ="info">I'm getting closer to YOU.</div>
+    
+    <script>
+        function getAddressFromCoords(lat,lng){
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+            .then(res => res.json())
+            .then(data => {
+                const address = data.display_name || "WHERE ARE YOU?";
+                document.getElementById("info").textContent += `\n${address}`;
+            })
+            .catch(err => {
+                document.getElementById("info").textContent += `\nError: ${err.message}`;
+            })
+        }
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(
+                (position) =>{
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    document.getElementById("info").textContent = `(${lat.toFixed(6)}, ${lng.toFixed(6)})`;
+                    getAddressFromCoords(lat,lng);
+                },
+                (error) => {
+                    document.getElementById("info").textContent = `I WILL FIND YOU.: ${error.message}`;
+                }
+            );
+        } else {
+            document.getElementById("info").textContent = "WHERE ARE YOU?";
+        }
+    </script>
+
+</body>
+</html>
