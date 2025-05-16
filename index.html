@@ -45,11 +45,7 @@
         fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
         .then(res => res.json())
         .then(data => {
-            const address = data.display_name || "WHERE ARE YOU?";
-            document.getElementById("info").textContent += `\n\n${address}`;
-        })
-        .catch(err => {
-            document.getElementById("info").textContent += `\n\nError: ${err.message}`;
+            address = data.display_name || "WHERE ARE YOU?";
         })
     }
     // 啟動程序
