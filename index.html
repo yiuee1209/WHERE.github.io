@@ -93,7 +93,7 @@
       // 緩慢靠近使用者位置
 
 
-      const approachSpeed = 0.01 + 0.09 * progress; // 從 0.01 緩慢增加到 0.1
+      const approachSpeed = 0.05
 
       currentLat += (userLat - currentLat) * approachSpeed;
       currentLon += (userLon - currentLon) * approachSpeed;
