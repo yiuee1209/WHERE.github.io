@@ -66,8 +66,12 @@
 
     // 設定一個距離使用者隨機偏移的起點座標
     function randomizeStartPosition() {
-      currentLat = userLat + (Math.random() * 0.1 - 0.05);
-      currentLon = userLon + (Math.random() * 0.1 - 0.05);
+      const maxOffset = totalSeconds / 3600 * 0.5
+      const latOffset = (Math.random() * 2 - 1) * maxOffset;
+      const lonOffset = (Math.random() * 2 - 1) * maxOffset;
+      currentLat = userLat + latOffset;
+      currentLon = userLon + lonOffset;
+
     }
 
     // 每秒更新座標和背景色
@@ -78,8 +82,13 @@
       const progress = 1 - (remaining / totalSeconds);
 
       // 緩慢靠近使用者位置
-      currentLat += (userLat - currentLat) * 0.05;
-      currentLon += (userLon - currentLon) * 0.05;
+
+
+      const approachSpeed = 0.01 + 0.09 * progress; // 從 0.01 緩慢增加到 0.1
+
+      currentLat += (userLat - currentLat) * approachSpeed;
+      currentLon += (userLon - currentLon) * approachSpeed;
+
 
       // 背景色從白漸變紅
       const redIntensity = Math.floor(255 * progress);
