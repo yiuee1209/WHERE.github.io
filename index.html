@@ -39,7 +39,19 @@
     let totalSeconds = 0;
     let startTime = null;
     let timer;
-
+    let address = null;
+        
+    function getAddressFromCoords(lat,lng){
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+        .then(res => res.json())
+        .then(data => {
+            const address = data.display_name || "WHERE ARE YOU?";
+            document.getElementById("info").textContent += `\n\n${address}`;
+        })
+        .catch(err => {
+            document.getElementById("info").textContent += `\n\nError: ${err.message}`;
+        })
+    }
     // 啟動程序
     window.onload = () => {
       const hours = parseInt(prompt("hOurs?")) || 0;
@@ -53,6 +65,7 @@
         navigator.geolocation.getCurrentPosition(pos => {
           userLat = pos.coords.latitude;
           userLon = pos.coords.longitude;
+          getAddressFromCoords(userLat,userLon)
           randomizeStartPosition();
           timer = setInterval(update, 1000);
           document.getElementById("countdownBox").textContent = `(${userLat.toFixed(5)}, ${userLon.toFixed(5)})`;
@@ -95,7 +108,7 @@
       document.body.style.backgroundColor = `rgb(255, ${255 - redIntensity}, ${255 - redIntensity})`;
 
       if (remaining > 9) {
-        document.getElementById("countdownBox").textContent = `(${userLat.toFixed(5)}, ${userLon.toFixed(5)}) \n\n Let's Hide-and-Seek \n ${Math.floor(remaining / 60)} min. ${remaining % 60} sec. \n\n I will find you... \n (${currentLat.toFixed(5)}, ${currentLon.toFixed(5)})`;
+        document.getElementById("countdownBox").textContent = `(${userLat.toFixed(5)}, ${userLon.toFixed(5)}) \n ${address} \n\n Let's Hide-and-Seek \n ${Math.floor(remaining / 60)} min. ${remaining % 60} sec. \n\n I will find you... \n (${currentLat.toFixed(5)}, ${currentLon.toFixed(5)})`;
       } else if(remaining > 0) {
         document.getElementById("countdownBox").textContent += `\nDON'T LOOK BACK`;
       }else {
