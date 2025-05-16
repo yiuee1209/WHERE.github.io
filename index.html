@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Don't look back.</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      transition: background-color 1s linear;
+      font-family: monospace;
+    }
+    #countdownBox {
+      font-size: 2rem;
+      padding: 20px;
+      white-space: pre-line;
+      text-align: center;
+    }
+    #end{
+        display: none;
+        font-size: 6rem;
+        background-color: black;
+        color: red;
+        text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="countdownBox">Time is running out.</div>
+  <div id="end">FOUND YOU</div>
+
+  <script>
+    let userLat = 0, userLon = 0;
+    let currentLat = 0, currentLon = 0;
+    let totalSeconds = 0;
+    let startTime = null;
+    let timer;
+
+    // 啟動程序
+    window.onload = () => {
+      const hours = parseInt(prompt("hOurs?")) || 0;
+      const minutes = parseInt(prompt("miNUtEs?")) || 0;
+      totalSeconds = hours * 3600 + minutes * 60;
+      startTime = Date.now();
+      document.getElementById("countdownBox").textContent = "I KnOw WhEre YoU ARe.";
+
+      // 嘗試取得使用者座標
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          userLat = pos.coords.latitude;
+          userLon = pos.coords.longitude;
+          randomizeStartPosition();
+          timer = setInterval(update, 1000);
+          document.getElementById("countdownBox").textContent = `(${userLat.toFixed(5)}, ${userLon.toFixed(5)})`;
+        }, err => {
+          document.getElementById("countdownBox").textContent = "WHERE ARE YOU";
+        });
+      } else {
+        document.getElementById("countdownBox").textContent = "DON'T CHEAT.";
+      }
+    };
+
+    // 設定一個距離使用者隨機偏移的起點座標
+    function randomizeStartPosition() {
+      currentLat = userLat + (Math.random() * 0.1 - 0.05);
+      currentLon = userLon + (Math.random() * 0.1 - 0.05);
+    }
+
+    // 每秒更新座標和背景色
+    function update() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const remaining = Math.max(0, totalSeconds - elapsed);
+
+      const progress = 1 - (remaining / totalSeconds);
+
+      // 緩慢靠近使用者位置
+      currentLat += (userLat - currentLat) * 0.05;
+      currentLon += (userLon - currentLon) * 0.05;
+
+      // 背景色從白漸變紅
+      const redIntensity = Math.floor(255 * progress);
+      document.body.style.backgroundColor = `rgb(255, ${255 - redIntensity}, ${255 - redIntensity})`;
+
+      if (remaining > 9) {
+        document.getElementById("countdownBox").textContent = `(${userLat.toFixed(5)}, ${userLon.toFixed(5)}) \n\n Let's Hide-and-Seek \n ${Math.floor(remaining / 60)} min. ${remaining % 60} sec. \n\n I will find you... \n (${currentLat.toFixed(5)}, ${currentLon.toFixed(5)})`;
+      } else if(remaining > 0) {
+        document.getElementById("countdownBox").textContent += `\nDON'T LOOK BACK`;
+      }else {
+        document.body.style.backgroundColor = "black"
+        document.body.style.transition = "background-color 0.5s linear"
+        document.getElementById("countdownBox").style.display = "none";
+        const msg = document.getElementById("end");
+        msg.style.display="block";
+        clearInterval(timer);
+
+        setTimeout(()=>{
+            setInterval(()=>{
+                msg.textContent =randomString(20 + Math.floor(Math.random()*20));
+                msg.style.getRandomColor();
+                msg.style.fontSize = (2+Math.random()*3) + "em";
+            },100);
+        })
+      }
+    }
+
+    function randomString(length){
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,-./:;<=>?@[]^_`{|}~";
+        return Array.from({length},()=>
+        chars[Math.floor(Math.random()*chars.length)]).join('');
+    }
+    function getRandomColor(){
+        const letters = "0123456789ABCDEF";
+        return "#" + Array.from({length:6},()=>letters[Math.floor(Math.random()*16)]).join('');
+    }
+  </script>
+</body>
+</html>
+
